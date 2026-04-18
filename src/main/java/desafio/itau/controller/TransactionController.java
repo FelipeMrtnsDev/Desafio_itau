@@ -13,7 +13,7 @@ import java.util.UUID;
 @RequestMapping("/transaction")
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private final  transactionService;
 
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
@@ -55,5 +55,21 @@ public class TransactionController {
     public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
         Transaction novaTransacao = transactionService.create(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaTransacao);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable UUID id, @RequestBody Transaction transactionDetails) {
+        Optional<Transaction> busca = transactionService.getById(id);
+
+        if (busca.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Transaction transacaoExistente = busca.get();
+        transacaoExistente.setValor(transactionDetails.getValor());
+        transacaoExistente.setDataHora(transactionDetails.getDataHora());
+        Transaction transacaoAtualizada = transactionService.create(transacaoExistente);
+
+        return ResponseEntity.status(HttpStatus.OK).body(transacaoAtualizada);
     }
 }

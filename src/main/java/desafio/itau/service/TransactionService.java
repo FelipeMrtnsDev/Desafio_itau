@@ -4,6 +4,7 @@ import desafio.itau.model.Transaction;
 import desafio.itau.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,12 +23,33 @@ public class TransactionService {
     }
 
     public Transaction create(Transaction transaction) {
-        // O save() preenche o campo ID que estava nulo
         return transactionRepository.save(transaction);
     }
 
     public Optional<Transaction> getById(UUID id) {
         return transactionRepository.findById(id);
+    }
+
+    public List<Transaction> getTransactionsLast60Sec() {
+        OffsetDateTime dataHoraLimite = OffsetDateTime.now().minusSeconds(60);
+
+        return transactionRepository.findByDataHoraAfter(dataHoraLimite);
+    }
+
+    public double getMinValor() {
+        return transactionRepository.minValorByDataHoraAfter(OffsetDateTime.now());
+    }
+
+    public double getMaxValor() {
+        return transactionRepository.maxValorByDataHoraAfter(OffsetDateTime.now());
+    }
+
+    public double getAvgValor() {
+        return transactionRepository.avgValorByDataHoraAfter(OffsetDateTime.now());
+    }
+
+    public double getSumValor() {
+        return transactionRepository.sumValorByDataHoraAfter(OffsetDateTime.now());
     }
 
     public boolean delete(UUID id) {
